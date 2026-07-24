@@ -1,4 +1,4 @@
-### Flow 
+# Flow 
 
 ## The Problem
 Designing and prototyping user interfaces currently feels fragmented. Designers are forced to switch constantly between high-fidelity vector tools like Figma to map out structural user flows, and physical notebooks or tablets to freely brainstorm rough, sketchy layouts. This context-switching disconnects raw creative brainstorming from functional interaction testing, making it slow and tedious to quickly validate early-stage application wireframes.
