@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import PencilKit
 
 @Model
 final class CanvasScreen {
@@ -20,6 +21,9 @@ final class CanvasScreen {
     
     var updatedAt: Date
     
+    @Attribute(.externalStorage)
+    var drawingData: Data?
+    
     @Relationship(deleteRule: .cascade)
     var elements: [CanvasElement]
     
@@ -32,7 +36,20 @@ final class CanvasScreen {
         self.name = name
         self.createdAt = .now
         self.updatedAt = .now
+        self.drawingData = nil
         self.elements = []
     }
     
+    var drawing: PKDrawing {
+        get {
+            guard let drawingData, let drawing = try? PKDrawing(data: drawingData) else {
+                return PKDrawing()
+            }
+            return drawing
+        }
+        set {
+            drawingData = newValue.dataRepresentation()
+            updatedAt = .now
+        }
+    }
 }

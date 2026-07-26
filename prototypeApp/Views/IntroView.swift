@@ -16,8 +16,10 @@ struct IntroView: View {
             
             Spacer()
             
-            Text("Welcoome to the Flow")
-                
+            Text("Welcome to Flow")
+                .font(.largeTitle)
+                .fontDesign(.rounded)
+                .fontWeight(.bold)
             
             Spacer()
             

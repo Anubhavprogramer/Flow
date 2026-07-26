@@ -10,41 +10,30 @@ import PencilKit
 
 struct CanvasContainer: UIViewRepresentable {
     @Binding var drawing: PKDrawing
+    @Binding var tool: PKTool
     
-    func makeUIView(context: Context) -> some PKCanvasView {
+    func makeUIView(context: Context) -> PKCanvasView {
         let canvas = PKCanvasView()
         
-        canvas.backgroundColor = .white
-        
+        canvas.backgroundColor = .clear
         canvas.drawing = drawing
-        
         canvas.drawingPolicy = .anyInput
-        
-        canvas.tool = PKInkingTool(
-            .pen,
-            color: .black,
-            width: 5
-        )
-        
+        canvas.tool = tool
         canvas.delegate = context.coordinator
-        
         canvas.isOpaque = false
-        
         canvas.alwaysBounceVertical = false
-        
         canvas.alwaysBounceHorizontal = false
-        
         canvas.minimumZoomScale = 1
-        
         canvas.maximumZoomScale = 4
         
         return canvas
     }
     
-    func updateUIView(_ uiView: UIViewType, context: Context) {
+    func updateUIView(_ uiView: PKCanvasView, context: Context) {
         if uiView.drawing != drawing {
             uiView.drawing = drawing
         }
+        uiView.tool = tool
     }
     
     func makeCoordinator() -> Coordinator {

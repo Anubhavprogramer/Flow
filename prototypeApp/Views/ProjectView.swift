@@ -11,6 +11,7 @@ import SwiftData
 struct ProjectView : View {
     let project: Project
     
+    @Environment(\.modelContext) private var context
     @State private var showAddScreenScreen: Bool = false
     
     @Query
@@ -38,14 +39,33 @@ struct ProjectView : View {
                 .padding(.vertical, AppSpacing.s)
                 .padding(.horizontal, AppSpacing.m)
             
-            List(screens) { screen in
-                NavigationLink {
-                    ScreenView(screen: screen)
-                } label : {
-                    VStack{
-                        Image(systemName: "Home")
-                        Text(screen.name)
+            List {
+                ForEach(screens) { screen in
+                    NavigationLink {
+                        ScreenView(screen: screen)
+                    } label: {
+                        HStack(spacing: AppSpacing.m) {
+                            Image(systemName: "iphone")
+                                .font(.title2)
+                                .foregroundStyle(.secondary)
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(screen.name)
+                                    .font(.headline)
+                                
+                                Text("Updated \(screen.updatedAt.formatted(date: .abbreviated, time: .shortened))")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .padding(.vertical, 4)
                     }
+                }
+                .onDelete { indexSet in
+                    for index in indexSet {
+                        context.delete(screens[index])
+                    }
+                    try? context.save()
                 }
             }
         }
