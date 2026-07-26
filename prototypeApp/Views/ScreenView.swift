@@ -112,8 +112,6 @@ struct ScreenView: View {
                         HStack(spacing: 4) {
                             Image(systemName: "play.fill")
                                 .font(.caption.weight(.bold))
-                            Text("Preview")
-                                .font(.subheadline.weight(.bold))
                         }
                         .foregroundStyle(.green)
                     }
@@ -301,31 +299,31 @@ struct ScreenView: View {
             Divider()
             
             Group {
-                menuButton(title: "Button", icon: "square.and.arrow.down.fill", color: .blue) {
+                menuButton(title: "Button", icon: "square.and.arrow.down.fill", color: .black) {
                     addElement(type: .button, title: "Button", width: 120, height: 44)
                 }
                 
-                menuButton(title: "Text Header", icon: "textformat", color: .purple) {
+                menuButton(title: "Text Header", icon: "textformat", color: .black) {
                     addElement(type: .text, title: "Title Header", width: 140, height: 36)
                 }
                 
-                menuButton(title: "Text Input", icon: "rectangle.and.pencil.and.ellipsis", color: .orange) {
+                menuButton(title: "Text Input", icon: "rectangle.and.pencil.and.ellipsis", color: .black) {
                     addElement(type: .input, title: "Text input...", width: 180, height: 44)
                 }
                 
-                menuButton(title: "Card / Container", icon: "square.dashed", color: .green) {
+                menuButton(title: "Card", icon: "square.dashed", color: .black) {
                     addElement(type: .rectangle, title: "Card Container", width: 180, height: 120)
                 }
                 
-                menuButton(title: "Circle Avatar", icon: "person.crop.circle.fill", color: .pink) {
+                menuButton(title: "Avatar", icon: "person.crop.circle.fill", color: .black) {
                     addElement(type: .circle, iconName: "person.fill", width: 64, height: 64)
                 }
                 
-                menuButton(title: "Star Icon", icon: "star.fill", color: .yellow) {
+                menuButton(title: "Icon", icon: AppStrings.plusIcon, color: .black) {
                     addElement(type: .icon, iconName: "star.fill", width: 44, height: 44)
                 }
                 
-                menuButton(title: "Image Box", icon: "photo.fill", color: .indigo) {
+                menuButton(title: "Image Box", icon: "photo.fill", color: .black) {
                     addElement(type: .image, title: "Image Box", width: 160, height: 100)
                 }
             }
