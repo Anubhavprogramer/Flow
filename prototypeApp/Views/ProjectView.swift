@@ -35,10 +35,18 @@ struct ProjectView : View {
             Text(project.desc)
                 .font(.subheadline)
                 .fontWeight(.regular)
-                .padding(AppSpacing.s)
+                .padding(.vertical, AppSpacing.s)
+                .padding(.horizontal, AppSpacing.m)
             
             List(screens) { screen in
-                Text(screen.name)
+                NavigationLink {
+                    ScreenView(screen: screen)
+                } label : {
+                    VStack{
+                        Image(systemName: "Home")
+                        Text(screen.name)
+                    }
+                }
             }
         }
         .navigationTitle(project.name)
