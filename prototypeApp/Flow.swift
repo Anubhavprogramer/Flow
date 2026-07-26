@@ -1,5 +1,6 @@
 import SwiftUI
 import Playgrounds
+import SwiftData
 
 @main struct MyApp: App {
     
@@ -10,5 +11,9 @@ import Playgrounds
             MainView()
                 .environmentObject(appState)
         }
+        .modelContainer(for: [
+            Project.self,
+            CanvasScreen.self
+        ])
     }
 }

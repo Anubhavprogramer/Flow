@@ -6,20 +6,26 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct NewProjectView: View {
     
     @Environment(\.dismiss) private var dismiss
     
-    @State private var projectName = ""
+    @Environment(\.modelContext) private var context
+    
+    @StateObject private var viewModel = NewProjectViewModel()
     
     var body: some View {
         NavigationStack {
             Form {
-                Text("Add a new Project here")
                 
-                Section("Project details"){
-                    TextField("Project Name", text: $projectName)
+                Section("Project Name"){
+                    TextField("Project Name", text: $viewModel.projectName)
+                }
+                
+                Section("Project Description"){
+                    TextField("Project Description", text: $viewModel.projectDescription)
                 }
             }
             .navigationTitle("Create a Project")
@@ -27,6 +33,7 @@ struct NewProjectView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
+                        viewModel.createProject(context: context)
                         dismiss()
                     } label: {
                         Image(systemName: AppStrings.doneButton)
@@ -44,3 +51,4 @@ struct NewProjectView: View {
         }
     }
 }
+
