@@ -24,8 +24,19 @@ struct HomeView: View {
         NavigationStack {
             List{
                 ForEach(projects) { project in
-                    Text(project.name)
-                        .font(Font.body.weight(.semibold))
+                    NavigationLink {
+                        ProjectView(project: project)
+                    } label: {
+                        VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                            Text(project.name)
+                                .font(.headline)
+                            
+                            Text(project.desc)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.vertical, AppSpacing.xs)
+                    }
                 }
                 .onDelete { indexSet in
                 

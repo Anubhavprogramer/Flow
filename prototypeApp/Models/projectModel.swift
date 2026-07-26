@@ -22,7 +22,8 @@ final class Project {
     
     var updatedAt: Date
     
-    var screens: [CanvasScreen]
+    @Relationship(deleteRule: .cascade, inverse: \CanvasScreen.project)
+    var screens: [CanvasScreen] = []
     
     init(name: String, desc: String) {
         self.id = UUID()

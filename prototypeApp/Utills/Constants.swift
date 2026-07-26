@@ -21,9 +21,21 @@ struct AppCorners {
     static var cruve: CGFloat = 999
 }
 
+struct AppSpacing {
+    static var xxs: CGFloat = 4
+    static var xs: CGFloat = 8
+    static var s: CGFloat = 12
+    static var m: CGFloat = 16
+    static var l: CGFloat = 24
+    static var xl: CGFloat = 32
+    static var xxl: CGFloat = 48
+    
+}
+
 struct AppStrings{
     static var appName = "Flow"
     static var plusIcon = "plus"
     static var backButton = "arrow.left"
     static var doneButton = "checkmark"
+    static var defaultScreenText = "Add Screen here and connect to make a Flow"
 }

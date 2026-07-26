@@ -23,6 +23,9 @@ final class CanvasScreen {
     @Relationship(deleteRule: .cascade)
     var elements: [CanvasElement]
     
+    @Relationship
+    var project: Project?
+    
     
     init(name: String) {
         self.id = UUID()
