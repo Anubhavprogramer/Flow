@@ -70,20 +70,36 @@ struct ScreenView: View {
         }
         .navigationTitle(screen.name)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .toolbar(isDrawing ? .hidden : .visible, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    menuPosition = CGPoint(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 3)
-                    withAnimation(.spring(response: 0.3)) {
-                        showElementMenu = true
+                HStack(spacing: 12) {
+                    // Back Navigation Button
+                    Button {
+                        viewModel.saveDrawing(to: screen, context: context)
+                        dismiss()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                                .font(.body.weight(.bold))
+                        }
+                        .foregroundStyle(.black)
                     }
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "plus.circle")
-                        Text("Element")
+                    
+                    // Add UI Element Button
+                    Button {
+                        menuPosition = CGPoint(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 3)
+                        withAnimation(.spring(response: 0.3)) {
+                            showElementMenu = true
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: AppStrings.plusIcon)
+                                .font(.subheadline.weight(.bold))
+                        }
+                        .foregroundStyle(.black)
                     }
-                    .font(.subheadline.weight(.medium))
                 }
             }
             
@@ -100,14 +116,6 @@ struct ScreenView: View {
                                 .font(.subheadline.weight(.bold))
                         }
                         .foregroundStyle(.green)
-                    }
-                    
-                    Button {
-                        viewModel.saveDrawing(to: screen, context: context)
-                        dismiss()
-                    } label: {
-                        Image(systemName: AppStrings.doneButton)
-                            .font(.body.weight(.bold))
                     }
                 }
             }
@@ -135,6 +143,7 @@ struct ScreenView: View {
             })
         }
         .animation(.easeInOut(duration: 0.2), value: isDrawing)
+        .dismissKeyboardOnTap()
     }
     
     @ViewBuilder
@@ -180,6 +189,7 @@ struct ScreenView: View {
                         tool: $viewModel.currentPKTool,
                         isDrawing: $isDrawing
                     )
+                    .allowsHitTesting(viewModel.selectedToolType != .idle)
                     
                     // 2. Predefined Wireframe Canvas Elements
                     ForEach(screen.elements) { element in
@@ -367,10 +377,13 @@ struct ScreenView: View {
     }
     
     private func deleteElement(_ element: CanvasElement) {
-        if let idx = screen.elements.firstIndex(where: { $0.id == element.id }) {
-            screen.elements.remove(at: idx)
+        HapticFeedback.heavy()
+        withAnimation(.spring(response: 0.3)) {
+            if let idx = screen.elements.firstIndex(where: { $0.id == element.id }) {
+                screen.elements.remove(at: idx)
+            }
+            context.delete(element)
+            try? context.save()
         }
-        context.delete(element)
-        try? context.save()
     }
 }

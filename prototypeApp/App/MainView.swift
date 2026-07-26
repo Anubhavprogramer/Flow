@@ -21,13 +21,7 @@ struct MainView: View {
                     HomeView()
                 }
             }
-//            .navigationDestination(for: AppRoute.self) { route in
-//                
-//                switch route {
-//                    case
-//                }
-//                
-//            }
         }
+        .dismissKeyboardOnTap()
     }
 }

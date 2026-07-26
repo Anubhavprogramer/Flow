@@ -10,6 +10,7 @@ import SwiftUI
 import SwiftData
 
 enum WireframeToolType: String, CaseIterable, Identifiable {
+    case idle
     case pen
     case pencil
     case marker
@@ -20,6 +21,7 @@ enum WireframeToolType: String, CaseIterable, Identifiable {
     
     var iconName: String {
         switch self {
+        case .idle: return "hand.tap.fill"
         case .pen: return "pencil.tip"
         case .pencil: return "pencil"
         case .marker: return "highlighter"
@@ -29,14 +31,17 @@ enum WireframeToolType: String, CaseIterable, Identifiable {
     }
     
     var displayName: String {
-        rawValue.capitalized
+        switch self {
+        case .idle: return "Select"
+        default: return rawValue.capitalized
+        }
     }
 }
 
 @MainActor
 final class CanvasViewModel: ObservableObject {
     @Published var drawing = PKDrawing()
-    @Published var selectedToolType: WireframeToolType = .pen
+    @Published var selectedToolType: WireframeToolType = .idle
     @Published var selectedColor: Color = .black
     @Published var strokeWidth: CGFloat = 4.0
     @Published var currentPKTool: PKTool = PKInkingTool(.pen, color: .black, width: 4.0)
@@ -53,6 +58,8 @@ final class CanvasViewModel: ObservableObject {
     func updateTool() {
         let uiColor = UIColor(selectedColor)
         switch selectedToolType {
+        case .idle:
+            currentPKTool = PKInkingTool(.pen, color: .clear, width: 0.001)
         case .pen:
             currentPKTool = PKInkingTool(.pen, color: uiColor, width: strokeWidth)
         case .pencil:
@@ -84,7 +91,10 @@ final class CanvasViewModel: ObservableObject {
     }
     
     func saveDrawing(to screen: CanvasScreen, context: ModelContext) {
-        screen.drawing = drawing
+        let newData = drawing.dataRepresentation()
+        guard screen.drawingData != newData else { return }
+        screen.drawingData = newData
+        screen.updatedAt = .now
         do {
             try context.save()
         } catch {

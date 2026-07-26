@@ -34,7 +34,7 @@ struct AppSpacing {
 
 struct AppStrings{
     static var appName = "Flow"
-    static var plusIcon = "plus"
+    static var plusIcon = "plus.circle"
     static var backButton = "arrow.left"
     static var doneButton = "checkmark"
     static var defaultScreenText = "Add Screen here and connect to make a Flow"
@@ -44,4 +44,8 @@ struct AppStrings{
     static var circle = "circle.and.pencil"
     static var textFormat = "text.bubble.below.text.bubble"
     static var photo = "photo"
+    static var squareGrid = "square.grid.2x2.fill"
+    
+    static var SearchText = "Search wireframes..."
+    
 }

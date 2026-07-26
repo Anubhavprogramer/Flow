@@ -48,6 +48,7 @@ struct NewProjectView: View {
                     }
                 }
             }
+            .dismissKeyboardOnTap()
         }
     }
 }

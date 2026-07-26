@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct CanvasElementView: View {
+    @Environment(\.modelContext) private var context
     @Bindable var element: CanvasElement
     var onDelete: () -> Void
     var onLinkTap: (() -> Void)? = nil
@@ -10,6 +11,7 @@ struct CanvasElementView: View {
     @State private var dragOffset: CGSize = .zero
     @State private var isSelected: Bool = false
     @State private var isResizing: Bool = false
+    @State private var initialSize: CGSize? = nil
     
     private var customBgColor: Color? {
         guard let hex = element.backgroundColorHex, !hex.isEmpty else { return nil }
@@ -133,46 +135,126 @@ struct CanvasElementView: View {
                         .position(x: 8, y: 8)
                 } else if element.targetScreenID != nil && !isSelected {
                     Image(systemName: "link.circle.fill")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(Color.accentColor, .white)
-                        .position(x: 8, y: 8)
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(Color.black, Color.white)
+                        .shadow(color: .black.opacity(0.2), radius: 3, x: 0, y: 1)
+                        .position(x: 10, y: 10)
                 }
                 
                 if isSelected {
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(element.locked ? Color.red : Color.blue, lineWidth: 1.5)
-                        .overlay(alignment: .bottomTrailing) {
+                        .stroke(element.locked ? Color.red : Color.black, lineWidth: 1.5)
+                        .overlay(alignment: .topLeading) {
+                            Button {
+                                HapticFeedback.medium()
+                                onCustomizeTap?()
+                            } label: {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.black)
+                                        .frame(width: 32, height: 32)
+                                        .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+                                        .overlay(
+                                            Circle()
+                                                .stroke(Color.white, lineWidth: 1.5)
+                                        )
+                                    
+                                    Image(systemName: "gearshape.fill")
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(.white)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            .offset(x: -12, y: -12)
+                            .highPriorityGesture(
+                                TapGesture().onEnded {
+                                    HapticFeedback.medium()
+                                    onCustomizeTap?()
+                                }
+                            )
+                        }
+                        .overlay(alignment: .topTrailing) {
                             if !element.locked {
-                                Image(systemName: "arrow.up.left.and.arrow.down.right")
-                                    .font(.caption2.weight(.bold))
-                                    .foregroundStyle(.white)
-                                    .padding(5)
-                                    .background(Color.blue)
-                                    .clipShape(Circle())
-                                    .offset(x: 8, y: 8)
-                                    .gesture(
-                                        DragGesture()
-                                            .onChanged { value in
-                                                isResizing = true
-                                                element.width = max(element.width + value.translation.width * 0.1, 40)
-                                                element.height = max(element.height + value.translation.height * 0.1, 24)
+                                Button {
+                                    HapticFeedback.medium()
+                                    onLinkTap?()
+                                } label: {
+                                    ZStack {
+                                        Circle()
+                                            .fill(element.targetScreenID != nil ? Color.black : Color.white)
+                                            .frame(width: 32, height: 32)
+                                            .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+                                            .overlay(
+                                                Circle()
+                                                    .stroke(Color.black, lineWidth: 1.5)
+                                            )
+                                        
+                                        Image(systemName: element.targetScreenID != nil ? "link.circle.fill" : "link")
+                                            .font(.caption.weight(.bold))
+                                            .foregroundStyle(element.targetScreenID != nil ? Color.white : Color.black)
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                                .offset(x: 12, y: -12)
+                                .highPriorityGesture(
+                                    TapGesture().onEnded {
+                                        HapticFeedback.medium()
+                                        onLinkTap?()
+                                    }
+                                )
+                            }
+                        }
+                        .overlay(alignment: .bottomTrailing) {
+                            if !element.locked && (element.type == .rectangle || element.type == .image) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.black)
+                                        .frame(width: 34, height: 34)
+                                        .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+                                        .overlay(
+                                            Circle()
+                                                .stroke(Color.white, lineWidth: 2)
+                                        )
+                                    
+                                    Image(systemName: "arrow.up.left.and.arrow.down.right")
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(.white)
+                                }
+                                .offset(x: 12, y: 12)
+                                .contentShape(Circle())
+                                .highPriorityGesture(
+                                    DragGesture(minimumDistance: 0)
+                                        .onChanged { value in
+                                            isResizing = true
+                                            let startSize = initialSize ?? CGSize(width: element.width, height: element.height)
+                                            if initialSize == nil {
+                                                initialSize = startSize
                                             }
-                                            .onEnded { _ in
-                                                isResizing = false
-                                            }
-                                    )
+                                            element.width = max(startSize.width + value.translation.width, 60)
+                                            element.height = max(startSize.height + value.translation.height, 40)
+                                        }
+                                        .onEnded { _ in
+                                            isResizing = false
+                                            initialSize = nil
+                                            try? context.save()
+                                        }
+                                )
                             }
                         }
                 }
             }
         )
+        .frame(minWidth: max(element.width, 44), minHeight: max(element.height, 44))
+        .contentShape(Rectangle())
         .position(x: element.x + dragOffset.width, y: element.y + dragOffset.height)
         .onTapGesture {
+            HapticFeedback.light()
             withAnimation(.spring(response: 0.2)) {
                 isSelected.toggle()
             }
         }
         .onLongPressGesture(minimumDuration: 0.35) {
+            HapticFeedback.medium()
             withAnimation(.spring(response: 0.3)) {
                 isSelected = true
                 onCustomizeTap?()
@@ -182,6 +264,9 @@ struct CanvasElementView: View {
             DragGesture()
                 .onChanged { value in
                     if !element.locked && !isResizing {
+                        if dragOffset == .zero {
+                            HapticFeedback.selection()
+                        }
                         dragOffset = value.translation
                     }
                 }

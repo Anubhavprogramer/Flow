@@ -22,13 +22,9 @@ struct PrototypePreviewView: View {
     
     var body: some View {
         ZStack {
-            // Sleek Studio Backdrop
-            LinearGradient(
-                colors: [Color(white: 0.14), Color(white: 0.06)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Crisp Pure White Studio Backdrop
+            Color.white
+                .ignoresSafeArea()
             
             // iPhone Device Frame Mockup
             iPhoneDeviceMockup
@@ -40,9 +36,10 @@ struct PrototypePreviewView: View {
                 VStack(spacing: 0) {
                     Text(currentScreen.name)
                         .font(.headline)
+                        .foregroundStyle(.black)
                     Text("PROTOTYPE MODE")
                         .font(.caption2.weight(.bold))
-                        .foregroundStyle(Color.accentColor)
+                        .foregroundStyle(Color(white: 0.4))
                 }
             }
             
@@ -54,6 +51,7 @@ struct PrototypePreviewView: View {
                         } label: {
                             Image(systemName: "chevron.left")
                                 .font(.body.weight(.bold))
+                                .foregroundStyle(.black)
                         }
                     }
                     
@@ -62,13 +60,12 @@ struct PrototypePreviewView: View {
                     } label: {
                         Image(systemName: "arrow.counterclockwise")
                             .font(.body.weight(.bold))
+                            .foregroundStyle(.black)
                     }
                 }
             }
         }
-        .toolbarBackground(.visible, for: .navigationBar)
-        .toolbarBackground(Color(white: 0.12), for: .navigationBar)
-        .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbarColorScheme(.light, for: .navigationBar)
         .onAppear {
             loadScreenDrawing()
         }
@@ -293,6 +290,7 @@ struct PrototypePreviewView: View {
     }
     
     private func navigateTo(_ targetScreen: CanvasScreen) {
+        HapticFeedback.success()
         screenHistory.append(currentScreen)
         withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
             currentScreen = targetScreen
