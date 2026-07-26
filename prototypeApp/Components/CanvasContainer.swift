@@ -11,6 +11,7 @@ import PencilKit
 struct CanvasContainer: UIViewRepresentable {
     @Binding var drawing: PKDrawing
     @Binding var tool: PKTool
+    @Binding var isDrawing: Bool
     
     func makeUIView(context: Context) -> PKCanvasView {
         let canvas = PKCanvasView()
@@ -26,11 +27,15 @@ struct CanvasContainer: UIViewRepresentable {
         canvas.minimumZoomScale = 1
         canvas.maximumZoomScale = 4
         
+        let panGesture = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handlePan(_:)))
+        panGesture.delegate = context.coordinator
+        canvas.addGestureRecognizer(panGesture)
+        
         return canvas
     }
     
     func updateUIView(_ uiView: PKCanvasView, context: Context) {
-        if uiView.drawing != drawing {
+        if uiView.drawing != drawing && !context.coordinator.isUserDrawing {
             uiView.drawing = drawing
         }
         uiView.tool = tool

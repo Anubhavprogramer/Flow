@@ -13,6 +13,8 @@ struct ProjectView : View {
     
     @Environment(\.modelContext) private var context
     @State private var showAddScreenScreen: Bool = false
+    @State private var showPrototypePreview: Bool = false
+    @State private var previewStartScreen: CanvasScreen?
     
     @Query
     private var screens: [CanvasScreen]
@@ -53,9 +55,20 @@ struct ProjectView : View {
                                 Text(screen.name)
                                     .font(.headline)
                                 
-                                Text("Updated \(screen.updatedAt.formatted(date: .abbreviated, time: .shortened))")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                HStack(spacing: 8) {
+                                    Text("Updated \(screen.updatedAt.formatted(date: .abbreviated, time: .shortened))")
+                                    
+                                    if screenHasLinks(screen) {
+                                        HStack(spacing: 3) {
+                                            Image(systemName: "link")
+                                            Text("\(linkedCount(for: screen)) links")
+                                        }
+                                        .font(.caption2.weight(.medium))
+                                        .foregroundStyle(Color.accentColor)
+                                    }
+                                }
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                             }
                         }
                         .padding(.vertical, 4)
@@ -72,17 +85,45 @@ struct ProjectView : View {
         .navigationTitle(project.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing){
-                Button {
-                    showAddScreenScreen = true
-                } label: {
-                    Image(systemName: AppStrings.plusIcon)
+            ToolbarItem(placement: .topBarTrailing) {
+                HStack(spacing: 12) {
+                    if let firstScreen = screens.first {
+                        Button {
+                            previewStartScreen = firstScreen
+                            showPrototypePreview = true
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "play.fill")
+                                Text("Play")
+                            }
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.green)
+                        }
+                    }
+                    
+                    Button {
+                        showAddScreenScreen = true
+                    } label: {
+                        Image(systemName: AppStrings.plusIcon)
+                    }
                 }
             }
         }
         .sheet(isPresented: $showAddScreenScreen){
-            NewScreenView( project: project)
+            NewScreenView(project: project)
         }
-        
+        .navigationDestination(isPresented: $showPrototypePreview) {
+            if let startScreen = previewStartScreen ?? screens.first {
+                PrototypePreviewView(initialScreen: startScreen, allScreens: screens)
+            }
+        }
+    }
+    
+    private func screenHasLinks(_ screen: CanvasScreen) -> Bool {
+        screen.elements.contains { $0.targetScreenID != nil }
+    }
+    
+    private func linkedCount(for screen: CanvasScreen) -> Int {
+        screen.elements.filter { $0.targetScreenID != nil }.count
     }
 }
