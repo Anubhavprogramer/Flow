@@ -11,10 +11,34 @@ struct ScreenView: View{
     
     var screen: CanvasScreen
     
+    @Environment(\.dismiss) private var dismiss
+    
+    @StateObject
+    private var viewModel = CanvasViewModel()
     
     var body: some View{
-        Text("This is the Screen")
-            .navigationTitle(screen.name)
-            .navigationBarTitleDisplayMode(.inline)
+        ZStack {
+            Color(.systemGray6)
+                .ignoresSafeArea()
+            
+            CanvasContainer(drawing: $viewModel.drawing)
+            
+            VStack{
+                Spacer()
+                
+                BottomToolbar()
+            }
+        }
+        .navigationTitle(screen.name)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar{
+            ToolbarItem(placement: .topBarTrailing){
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: AppStrings.doneButton)
+                }
+            }
+        }
     }
 }

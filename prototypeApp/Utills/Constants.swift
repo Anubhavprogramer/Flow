@@ -38,4 +38,10 @@ struct AppStrings{
     static var backButton = "arrow.left"
     static var doneButton = "checkmark"
     static var defaultScreenText = "Add Screen here and connect to make a Flow"
+    
+    static var pencil = "pencil"
+    static var square = "square.and.pencil"
+    static var circle = "circle.and.pencil"
+    static var textFormat = "text.bubble.below.text.bubble"
+    static var photo = "photo"
 }
